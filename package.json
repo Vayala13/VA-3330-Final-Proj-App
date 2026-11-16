@@ -1,0 +1,18 @@
+{
+  "name": "mbmt-case-tracker",
+  "version": "1.0.0",
+  "description": "Case tracker for a small civil-litigation law firm (CSCI 3330 Exam #2)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test"
+  },
+  "author": "Viviana Ayala",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^7.0.2",
+    "express": "^4.22.3"
+  }
+}
