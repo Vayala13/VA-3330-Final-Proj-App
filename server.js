@@ -13,6 +13,7 @@ import {
 } from "./middleware/auth.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 import { seedUsers } from "./services/userService.js";
+import { seedSampleData } from "./services/seedData.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -42,6 +43,7 @@ app.use(errorHandler);
 
 try {
   await seedUsers();
+  seedSampleData();
   app.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });
