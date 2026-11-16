@@ -1,0 +1,47 @@
+<%- include("partials/header.ejs") %>
+
+<p><a href="/cases">Back to cases</a></p>
+
+<div class="page-heading">
+  <h1><%= matter.caption %></h1>
+  <a href="/cases/<%= matter.caseId %>/edit" class="btn">Edit case</a>
+</div>
+
+<% if (saved) { %>
+  <p class="alert alert-success" role="status">Case saved. The change is recorded in the history below.</p>
+<% } else if (unchanged) { %>
+  <p class="alert alert-info" role="status">No changes to save.</p>
+<% } %>
+
+<dl class="case-facts">
+  <div><dt>Status</dt><dd><%= matter.status %></dd></div>
+  <div><dt>Cause number</dt><dd><%= matter.causeNumber %></dd></div>
+  <div><dt>Client</dt><dd><%= matter.clientName %></dd></div>
+  <div><dt>Type</dt><dd><%= matter.type %></dd></div>
+  <div><dt>Lead attorney</dt><dd><%= matter.leadAttorneyName %></dd></div>
+  <div><dt>Last touched</dt><dd><%= matter.lastTouchedDate %> by <%= matter.lastTouchedByName %></dd></div>
+</dl>
+
+<h2>History</h2>
+
+<% if (activities.length === 0) { %>
+  <p class="empty">No activity recorded yet.</p>
+<% } else { %>
+  <table class="data-table">
+    <thead>
+      <tr><th>When</th><th>Who</th><th>What</th><th>Details</th></tr>
+    </thead>
+    <tbody>
+      <% activities.forEach((activity) => { %>
+        <tr>
+          <td class="nowrap"><time datetime="<%= activity.timestamp %>"><%= activity.when %></time></td>
+          <td class="nowrap"><%= activity.userName %></td>
+          <td class="nowrap"><%= activity.action %></td>
+          <td><%= activity.detail %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include("partials/footer.ejs") %>

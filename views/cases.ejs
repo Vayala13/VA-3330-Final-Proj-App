@@ -1,0 +1,67 @@
+<%- include("partials/header.ejs") %>
+
+<div class="page-heading">
+  <h1>Cases</h1>
+  <a href="/cases/new" class="btn">Add case</a>
+</div>
+<form action="/cases" method="GET" class="filter-bar">
+  <div>
+    <label for="attorneyId">Lead attorney</label>
+    <select id="attorneyId" name="attorneyId">
+      <option value="">All attorneys</option>
+      <% attorneys.forEach((attorney) => { %>
+        <option value="<%= attorney.userId %>" <%= filters.attorneyId === attorney.userId ? "selected" : "" %>><%= attorney.name %></option>
+      <% }) %>
+    </select>
+  </div>
+
+  <div>
+    <label for="type">Case type</label>
+    <select id="type" name="type">
+      <option value="">All types</option>
+      <% caseTypes.forEach((caseType) => { %>
+        <option value="<%= caseType %>" <%= filters.type === caseType ? "selected" : "" %>><%= caseType %></option>
+      <% }) %>
+    </select>
+  </div>
+
+  <button type="submit" class="btn">Filter</button>
+  <a href="/cases" class="clear-link">Clear filters</a>
+</form>
+
+<% groups.forEach((group) => { %>
+  <section class="case-group">
+    <h2><%= group.status %> <span class="count">(<%= group.cases.length %>)</span></h2>
+
+    <% if (group.cases.length === 0) { %>
+      <p class="empty">No <%= group.status.toLowerCase() %> cases match these filters.</p>
+    <% } else { %>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Caption</th>
+            <th>Cause number</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Lead attorney</th>
+            <th>Last touched</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% group.cases.forEach((matter) => { %>
+            <tr>
+              <td><a href="/cases/<%= matter.caseId %>"><%= matter.caption %></a></td>
+              <td class="nowrap"><%= matter.causeNumber %></td>
+              <td><%= matter.clientName %></td>
+              <td><%= matter.type %></td>
+              <td><%= matter.leadAttorneyName %></td>
+              <td><%= matter.lastTouchedDate %> by <%= matter.lastTouchedByName %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </section>
+<% }) %>
+
+<%- include("partials/footer.ejs") %>

@@ -4,6 +4,7 @@ import morgan from "morgan";
 import homeRouter from "./routes/home.js";
 import authRouter from "./routes/auth.js";
 import staffRouter from "./routes/staff.js";
+import casesRouter from "./routes/cases.js";
 import { securityHeaders, sessionMiddleware, csrfProtection } from "./middleware/security.js";
 import {
   passportInitialize,
@@ -36,6 +37,7 @@ app.use("/", authRouter);
 // Everything below requires a signed-in user.
 app.use(ensureAuthenticated);
 app.use("/", homeRouter);
+app.use("/cases", casesRouter);
 app.use("/staff", staffRouter);
 
 app.use(notFound);

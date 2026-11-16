@@ -2,6 +2,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import rateLimit from "express-rate-limit";
 import { verifyCredentials, findUserById } from "../services/userService.js";
+import { findCase, canSetStatus } from "../services/caseService.js";
 
 passport.use(
   new LocalStrategy({ usernameField: "email" }, async (email, password, done) => {
@@ -54,6 +55,21 @@ export const requireRole = (...roles) => (req, res, next) => {
     return next(error);
   }
   next();
+};
+
+// Authorization: only attorneys and admins can set a case to Closed or Referred out.
+export const requireStatusPermission = (req, res, next) => {
+  try {
+    const currentStatus = req.params.caseId ? findCase(req.params.caseId).status : null;
+    if (!canSetStatus(req.user, req.body.status, currentStatus)) {
+      const error = new Error("Only attorneys and admins can mark a case Closed or Referred out.");
+      error.status = 403;
+      return next(error);
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const loginRateLimiter = rateLimit({

@@ -1,6 +1,7 @@
 <nav class="site-nav" aria-label="Main">
   <% if (locals.currentUser) { %>
     <a href="/">Home</a>
+    <a href="/cases">Cases</a>
     <% if (currentUser.role === "admin") { %>
       <a href="/staff">Staff</a>
     <% } %>
