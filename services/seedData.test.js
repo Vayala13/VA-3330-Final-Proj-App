@@ -19,6 +19,12 @@ test("every collection has sample data", () => {
   }
 });
 
+test("every task has a title, and template subtasks use the template's titles", () => {
+  assert.ok(db.tasks.every((task) => typeof task.title === "string" && task.title.length > 0));
+  const subtaskTitles = db.tasks.filter((task) => task.isSubtask()).map((task) => task.title);
+  assert.deepEqual(subtaskTitles, db.taskTemplates.find((t) => t.name === "Motion").subtaskTitles);
+});
+
 test("every case status appears so each case-list group has rows", () => {
   const statuses = new Set(db.cases.map((c) => c.status));
   for (const status of Object.values(CASE_STATUSES)) {

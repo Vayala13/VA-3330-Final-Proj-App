@@ -57,6 +57,12 @@ export const TASK_PRIORITIES = Object.freeze({
   LOW: "Low"
 });
 
+// How urgent an open task is on the to-do list. Tasks due later have no label.
+export const TODO_LABELS = Object.freeze({
+  OVERDUE: "Overdue",
+  DUE_TODAY: "Due today"
+});
+
 export const TASK_STATUSES = Object.freeze({
   OPEN: "Open",
   IN_PROGRESS: "In progress",

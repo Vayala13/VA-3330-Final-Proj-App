@@ -130,21 +130,21 @@ export function seedSampleData(today = currentDate()) {
     })
   );
 
-  const addTask = ({ caseId, parentTaskId = null, ownerId, dueDate, priority, status = TASK_STATUSES.OPEN }) => {
-    const task = new Task({ taskId: nextId(db.tasks, "taskId"), caseId, parentTaskId, ownerId, dueDate, priority, status });
+  const addTask = ({ caseId, parentTaskId = null, title, ownerId, dueDate, priority, status = TASK_STATUSES.OPEN }) => {
+    const task = new Task({ taskId: nextId(db.tasks, "taskId"), caseId, parentTaskId, title, ownerId, dueDate, priority, status });
     db.tasks.push(task);
     return task;
   };
 
-  const motionToCompel = addTask({ caseId: garza.caseId, ownerId: michael, dueDate: day(10), priority: TASK_PRIORITIES.HIGH });
-  for (const { dueDate } of motionTemplate.subtaskDueDates(motionToCompel.dueDate)) {
-    addTask({ caseId: garza.caseId, parentTaskId: motionToCompel.taskId, ownerId: ana, dueDate, priority: TASK_PRIORITIES.MEDIUM });
+  const motionToCompel = addTask({ caseId: garza.caseId, title: "Motion to compel discovery", ownerId: michael, dueDate: day(10), priority: TASK_PRIORITIES.HIGH });
+  for (const { title, dueDate } of motionTemplate.subtaskDueDates(motionToCompel.dueDate)) {
+    addTask({ caseId: garza.caseId, parentTaskId: motionToCompel.taskId, title, ownerId: ana, dueDate, priority: TASK_PRIORITIES.MEDIUM });
   }
-  addTask({ caseId: hollis.caseId, ownerId: luis, dueDate: day(0), priority: TASK_PRIORITIES.HIGH });
-  addTask({ caseId: trevino.caseId, ownerId: luis, dueDate: day(-2), priority: TASK_PRIORITIES.MEDIUM, status: TASK_STATUSES.IN_PROGRESS });
-  addTask({ caseId: alvarez.caseId, ownerId: ana, dueDate: day(1), priority: TASK_PRIORITIES.LOW });
-  addTask({ caseId: pena.caseId, ownerId: michael, dueDate: day(4), priority: TASK_PRIORITIES.MEDIUM });
-  addTask({ caseId: ochoa.caseId, ownerId: ana, dueDate: day(-40), priority: TASK_PRIORITIES.LOW, status: TASK_STATUSES.DONE });
+  addTask({ caseId: hollis.caseId, title: "Send mediation statement to the mediator", ownerId: luis, dueDate: day(0), priority: TASK_PRIORITIES.HIGH });
+  addTask({ caseId: trevino.caseId, title: "Draft answer to counterclaim", ownerId: luis, dueDate: day(-2), priority: TASK_PRIORITIES.MEDIUM, status: TASK_STATUSES.IN_PROGRESS });
+  addTask({ caseId: alvarez.caseId, title: "Run conflict check", ownerId: ana, dueDate: day(1), priority: TASK_PRIORITIES.LOW });
+  addTask({ caseId: pena.caseId, title: "Collect medical records for summary judgment response", ownerId: michael, dueDate: day(4), priority: TASK_PRIORITIES.MEDIUM });
+  addTask({ caseId: ochoa.caseId, title: "Send closing letter to client", ownerId: ana, dueDate: day(-40), priority: TASK_PRIORITIES.LOW, status: TASK_STATUSES.DONE });
 
   const callRows = [
     [garza, ana, CALL_DIRECTIONS.INCOMING, "Rosa Garza (client)", "Asked for an update on discovery and the hearing date.", true, ["Email the hearing date to the client"], -2, "14:20"],

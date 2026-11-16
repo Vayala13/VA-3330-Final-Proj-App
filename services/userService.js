@@ -70,6 +70,23 @@ export function getAllUsers() {
   return [...users];
 }
 
+// Turns an owner filter from the query string into a userId. "mine" means the signed-in user; empty means everyone.
+export function parseOwnerFilter(owner, currentUser) {
+  if (!isGoodStringParam(owner)) {
+    return null;
+  }
+  if (owner === "mine") {
+    return currentUser.userId;
+  }
+  const ownerId = Number(owner);
+  if (!findUserById(ownerId)) {
+    const error = new Error("Choose a person from the list.");
+    error.status = 400;
+    throw error;
+  }
+  return ownerId;
+}
+
 export function findUserById(userId) {
   return users.find((user) => user.userId === userId);
 }

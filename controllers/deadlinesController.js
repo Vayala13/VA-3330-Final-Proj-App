@@ -1,12 +1,16 @@
 import { listUpcomingDeadlines, getDeadlineDetails, moveDeadline } from "../services/deadlineService.js";
+import { getAllUsers, parseOwnerFilter } from "../services/userService.js";
 import { DEADLINE_WINDOW_DAYS } from "../services/constants.js";
 
 export function listDeadlines(req, res, next) {
   try {
+    const ownerId = parseOwnerFilter(req.query.owner, req.user);
     res.render("deadlines.ejs", {
       title: "Deadlines",
-      deadlines: listUpcomingDeadlines(),
-      windowDays: DEADLINE_WINDOW_DAYS
+      deadlines: listUpcomingDeadlines(undefined, { ownerId }),
+      windowDays: DEADLINE_WINDOW_DAYS,
+      staff: getAllUsers(),
+      owner: req.query.owner || ""
     });
   } catch (error) {
     next(error);
