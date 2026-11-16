@@ -4,7 +4,6 @@ import { seedUsers, findUserByEmail } from "./userService.js";
 import { seedSampleData } from "./seedData.js";
 import { listCasesByStatus, parseCaseFilters, getAttorneys } from "./caseService.js";
 import { CASE_STATUSES, CASE_TYPES } from "./constants.js";
-import { ValidationError } from "./errors.js";
 
 const TODAY = "2026-11-15";
 
@@ -77,8 +76,8 @@ test("valid filter values are converted for the service", () => {
 
 test("unknown attorneys, non-attorneys, and made-up types are rejected", () => {
   const paralegal = findUserByEmail("agarza@mbmt.test");
-  assert.throws(() => parseCaseFilters({ attorneyId: "999" }), ValidationError);
-  assert.throws(() => parseCaseFilters({ attorneyId: "abc" }), ValidationError);
-  assert.throws(() => parseCaseFilters({ attorneyId: String(paralegal.userId) }), ValidationError);
-  assert.throws(() => parseCaseFilters({ type: "Criminal" }), ValidationError);
+  assert.throws(() => parseCaseFilters({ attorneyId: "999" }), { status: 400 });
+  assert.throws(() => parseCaseFilters({ attorneyId: "abc" }), { status: 400 });
+  assert.throws(() => parseCaseFilters({ attorneyId: String(paralegal.userId) }), { status: 400 });
+  assert.throws(() => parseCaseFilters({ type: "Criminal" }), { status: 400 });
 });

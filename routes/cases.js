@@ -1,6 +1,7 @@
 import express from "express";
 import {
   listCases,
+  showCase,
   showNewCaseForm,
   addCase,
   showEditCaseForm,
@@ -13,6 +14,7 @@ const router = express.Router();
 router.get("/", listCases);
 router.get("/new", showNewCaseForm);
 router.post("/", requireStatusPermission, addCase);
+router.get("/:caseId", showCase);
 router.get("/:caseId/edit", showEditCaseForm);
 router.post("/:caseId", requireStatusPermission, saveCase);
 

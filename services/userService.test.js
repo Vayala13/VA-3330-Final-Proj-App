@@ -9,8 +9,6 @@ import {
   DEMO_PASSWORD
 } from "./userService.js";
 import { ROLES } from "./constants.js";
-import { ValidationError } from "./errors.js";
-
 before(async () => {
   await seedUsers();
 });
@@ -71,7 +69,7 @@ test("createUser adds a staff member who can then log in", async () => {
   assert.equal((await verifyCredentials("rvillarreal@mbmt.test", "temporary-pass"))?.name, "Rosa Villarreal");
 });
 
-test("createUser rejects bad input with a ValidationError", async () => {
+test("createUser rejects bad input with status 400", async () => {
   await seedUsers();
   const cases = [
     [newStaff({ name: "  " }), /Name is required/],
@@ -81,7 +79,7 @@ test("createUser rejects bad input with a ValidationError", async () => {
     [newStaff({ password: "short" }), /at least 8 characters/]
   ];
   for (const [input, message] of cases) {
-    await assert.rejects(createUser(input), (error) => error instanceof ValidationError && message.test(error.message));
+    await assert.rejects(createUser(input), (error) => error.status === 400 && message.test(error.message));
   }
   assert.equal(getAllUsers().length, 5);
 });

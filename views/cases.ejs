@@ -4,13 +4,6 @@
   <h1>Cases</h1>
   <a href="/cases/new" class="btn">Add case</a>
 </div>
-
-<% if (locals.saved) { %>
-  <p class="alert alert-success" role="status">Saved <%= saved %>.</p>
-<% } else if (locals.unchanged) { %>
-  <p class="alert alert-info" role="status">No changes to save for <%= unchanged %>.</p>
-<% } %>
-
 <form action="/cases" method="GET" class="filter-bar">
   <div>
     <label for="attorneyId">Lead attorney</label>
@@ -57,7 +50,7 @@
         <tbody>
           <% group.cases.forEach((matter) => { %>
             <tr>
-              <td><a href="/cases/<%= matter.caseId %>/edit"><%= matter.caption %></a></td>
+              <td><a href="/cases/<%= matter.caseId %>"><%= matter.caption %></a></td>
               <td class="nowrap"><%= matter.causeNumber %></td>
               <td><%= matter.clientName %></td>
               <td><%= matter.type %></td>

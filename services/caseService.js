@@ -5,8 +5,6 @@ import { Case } from "./Case.js";
 import { today } from "./dates.js";
 import { CASE_STATUSES, CASE_TYPES, ATTORNEY_ONLY_STATUSES, ROLES, ACTIVITY_ACTIONS } from "./constants.js";
 import { isGoodStringParam } from "./validation.js";
-import { ValidationError, ForbiddenError, NotFoundError } from "./errors.js";
-
 const MAX_TEXT_LENGTH = 200;
 
 const FIELD_LABELS = {
@@ -29,14 +27,18 @@ export function parseCaseFilters({ attorneyId, type } = {}) {
   if (isGoodStringParam(attorneyId)) {
     const id = Number(attorneyId);
     if (!getAttorneys().some((attorney) => attorney.userId === id)) {
-      throw new ValidationError("Choose an attorney from the list.");
+      const error = new Error("Choose an attorney from the list.");
+      error.status = 400;
+      throw error;
     }
     filters.attorneyId = id;
   }
 
   if (isGoodStringParam(type)) {
     if (!Object.values(CASE_TYPES).includes(type)) {
-      throw new ValidationError("Choose a case type from the list.");
+      const error = new Error("Choose a case type from the list.");
+      error.status = 400;
+      throw error;
     }
     filters.type = type;
   }
@@ -50,6 +52,7 @@ const toListRow = (matter) => ({
   causeNumber: matter.causeNumber,
   clientName: matter.clientName,
   type: matter.type,
+  status: matter.status,
   leadAttorneyName: findUserById(matter.leadAttorneyId)?.name ?? "Unknown",
   lastTouchedByName: findUserById(matter.lastTouchedBy)?.name ?? "Unknown",
   lastTouchedDate: matter.lastTouchedDate
@@ -71,11 +74,18 @@ export function listCasesByStatus({ attorneyId = null, type = null } = {}) {
   }));
 }
 
+// One case with people's names filled in, for the case detail page.
+export function getCaseDetails(caseIdParam) {
+  return toListRow(findCase(caseIdParam));
+}
+
 export function findCase(caseIdParam) {
   const caseId = Number(caseIdParam);
   const matter = Number.isInteger(caseId) ? db.cases.find((c) => c.caseId === caseId) : undefined;
   if (!matter) {
-    throw new NotFoundError("Case not found.");
+    const error = new Error("Case not found.");
+    error.status = 404;
+    throw error;
   }
   return matter;
 }
@@ -94,11 +104,15 @@ export function statusesFor(user, currentStatus = null) {
 
 const requireText = (value, label) => {
   if (!isGoodStringParam(value)) {
-    throw new ValidationError(`${label} is required.`);
+    const error = new Error(`${label} is required.`);
+    error.status = 400;
+    throw error;
   }
   const text = value.trim();
   if (text.length > MAX_TEXT_LENGTH) {
-    throw new ValidationError(`${label} must be ${MAX_TEXT_LENGTH} characters or fewer.`);
+    const error = new Error(`${label} must be ${MAX_TEXT_LENGTH} characters or fewer.`);
+    error.status = 400;
+    throw error;
   }
   return text;
 };
@@ -113,18 +127,28 @@ function validateCaseInput({ caption, causeNumber, clientName, type, status, lea
     leadAttorneyId: Number(leadAttorneyId)
   };
   if (!Object.values(CASE_TYPES).includes(type)) {
-    throw new ValidationError("Choose a case type from the list.");
+    const error = new Error("Choose a case type from the list.");
+    error.status = 400;
+    throw error;
   }
   if (!Object.values(CASE_STATUSES).includes(status)) {
-    throw new ValidationError("Choose a status from the list.");
+    const error = new Error("Choose a status from the list.");
+    error.status = 400;
+    throw error;
   }
   if (!getAttorneys().some((attorney) => attorney.userId === fields.leadAttorneyId)) {
-    throw new ValidationError("Choose a lead attorney from the list.");
+    const error = new Error("Choose a lead attorney from the list.");
+    error.status = 400;
+    throw error;
   }
   return fields;
 }
 
-const statusDenied = () => new ForbiddenError("Only attorneys and admins can mark a case Closed or Referred out.");
+const statusDenied = () => {
+  const error = new Error("Only attorneys and admins can mark a case Closed or Referred out.");
+  error.status = 403;
+  return error;
+};
 
 const displayValue = (field, value) => (field === "leadAttorneyId" ? findUserById(value)?.name ?? "Unknown" : value);
 

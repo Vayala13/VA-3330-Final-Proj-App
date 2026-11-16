@@ -3,10 +3,9 @@ import assert from "node:assert/strict";
 import { db } from "./dataStore.js";
 import { seedUsers, findUserByEmail } from "./userService.js";
 import { seedSampleData } from "./seedData.js";
-import { createCase, updateCase, findCase, canSetStatus, statusesFor } from "./caseService.js";
+import { createCase, updateCase, findCase, getCaseDetails, canSetStatus, statusesFor } from "./caseService.js";
+import { getActivityForCase } from "./activityService.js";
 import { CASE_STATUSES, CASE_TYPES, ACTIVITY_ACTIONS } from "./constants.js";
-import { ValidationError, ForbiddenError, NotFoundError } from "./errors.js";
-
 const TODAY = "2026-11-15";
 const NOW = new Date(2026, 10, 15, 14, 30);
 
@@ -128,9 +127,9 @@ test("the service refuses a paralegal's close attempt and writes nothing", () =>
   const before = db.activities.length;
   assert.throws(
     () => updateCase(String(matter.caseId), inputFrom(matter, { status: CASE_STATUSES.CLOSED }), ana, NOW),
-    ForbiddenError
+    { status: 403 }
   );
-  assert.throws(() => createCase({ ...newCaseInput(), status: CASE_STATUSES.CLOSED }, ana, NOW), ForbiddenError);
+  assert.throws(() => createCase({ ...newCaseInput(), status: CASE_STATUSES.CLOSED }, ana, NOW), { status: 403 });
   assert.equal(matter.status, CASE_STATUSES.ACTIVE);
   assert.equal(db.activities.length, before);
 });
@@ -141,7 +140,7 @@ test("the status dropdown only offers what the user may choose", () => {
   assert.deepEqual(statusesFor(michael), Object.values(CASE_STATUSES));
 });
 
-test("bad input is rejected with a ValidationError and nothing is saved", () => {
+test("bad input is rejected with status 400 and nothing is saved", () => {
   const caseCount = db.cases.length;
   const bad = [
     { caption: "   " },
@@ -153,12 +152,31 @@ test("bad input is rejected with a ValidationError and nothing is saved", () => 
     { leadAttorneyId: "abc" }
   ];
   for (const change of bad) {
-    assert.throws(() => createCase({ ...newCaseInput(), ...change }, michael, NOW), ValidationError, JSON.stringify(change));
+    assert.throws(() => createCase({ ...newCaseInput(), ...change }, michael, NOW), { status: 400 }, JSON.stringify(change));
   }
   assert.equal(db.cases.length, caseCount);
 });
 
+test("the case history lists newest first with names, including the edit just made", () => {
+  const matter = db.cases.find((c) => c.caption.startsWith("Hollis"));
+  updateCase(String(matter.caseId), inputFrom(matter, { clientName: "Mark A. Hollis" }), ana, NOW);
+
+  const history = getActivityForCase(matter.caseId);
+  assert.equal(history[0].userName, "Ana Garza");
+  assert.equal(history[0].detail, "Changed client from Mark Hollis to Mark A. Hollis.");
+  const times = history.map((a) => a.timestamp);
+  assert.deepEqual(times, [...times].sort().reverse());
+  assert.ok(history.every((a) => a.userName !== "Unknown"));
+});
+
+test("case details show names and status for the detail page", () => {
+  const details = getCaseDetails("1");
+  assert.equal(details.status, CASE_STATUSES.ACTIVE);
+  assert.equal(details.leadAttorneyName, "Michael Benson");
+  assert.throws(() => getCaseDetails("999"), { status: 404 });
+});
+
 test("unknown case ids are a 404", () => {
-  assert.throws(() => findCase("999"), NotFoundError);
-  assert.throws(() => findCase("abc"), NotFoundError);
+  assert.throws(() => findCase("999"), { status: 404 });
+  assert.throws(() => findCase("abc"), { status: 404 });
 });

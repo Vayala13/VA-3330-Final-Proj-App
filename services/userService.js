@@ -2,8 +2,6 @@ import bcrypt from "bcrypt";
 import { User } from "./User.js";
 import { ROLES, SALT_ROUNDS, MIN_PASSWORD_LENGTH } from "./constants.js";
 import { isGoodStringParam, isGoodEmail } from "./validation.js";
-import { ValidationError } from "./errors.js";
-
 // Demo staff for the class version. Passwords are hashed when the server starts; only the hashes are kept.
 export const DEMO_PASSWORD = "CaseTracker1!";
 
@@ -31,19 +29,29 @@ export async function seedUsers() {
 
 export async function createUser({ name, email, password, role }) {
   if (!isGoodStringParam(name)) {
-    throw new ValidationError("Name is required.");
+    const error = new Error("Name is required.");
+    error.status = 400;
+    throw error;
   }
   if (!isGoodEmail(email)) {
-    throw new ValidationError("Enter a valid email address.");
+    const error = new Error("Enter a valid email address.");
+    error.status = 400;
+    throw error;
   }
   if (findUserByEmail(email)) {
-    throw new ValidationError("A staff account with that email already exists.");
+    const error = new Error("A staff account with that email already exists.");
+    error.status = 400;
+    throw error;
   }
   if (!Object.values(ROLES).includes(role)) {
-    throw new ValidationError("Choose a role.");
+    const error = new Error("Choose a role.");
+    error.status = 400;
+    throw error;
   }
   if (typeof password !== "string" || password.length < MIN_PASSWORD_LENGTH) {
-    throw new ValidationError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+    const error = new Error(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+    error.status = 400;
+    throw error;
   }
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);

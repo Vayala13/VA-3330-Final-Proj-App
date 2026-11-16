@@ -1,6 +1,6 @@
 <%- include("partials/header.ejs") %>
 
-<p><a href="/cases">Back to cases</a></p>
+<p><a href="<%= locals.cancelUrl || "/cases" %>">Cancel</a></p>
 
 <section class="card">
   <h1><%= title %></h1>

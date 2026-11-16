@@ -1,7 +1,5 @@
 import { getAllUsers, createUser } from "../services/userService.js";
 import { ROLES } from "../services/constants.js";
-import { ValidationError } from "../services/errors.js";
-
 const renderStaffPage = (res, extra = {}) =>
   res.render("staff.ejs", {
     title: "Staff",
@@ -25,7 +23,7 @@ export async function addStaff(req, res, next) {
     const user = await createUser({ name, email, password, role });
     res.redirect(`/staff?added=${encodeURIComponent(user.name)}`);
   } catch (error) {
-    if (error instanceof ValidationError) {
+    if (error.status === 400) {
       const { name, email, role } = req.body;
       return res.status(error.status).render("staff.ejs", {
         title: "Staff",
