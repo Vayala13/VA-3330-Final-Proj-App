@@ -1,4 +1,12 @@
-import { listUpcomingDeadlines, getDeadlineDetails, moveDeadline } from "../services/deadlineService.js";
+import {
+  listUpcomingDeadlines,
+  getDeadlineDetails,
+  moveDeadline,
+  completeDeadline,
+  findDeadline
+} from "../services/deadlineService.js";
+import { setFlash } from "../middleware/flash.js";
+import { returnPath } from "./returnTo.js";
 import { getAllUsers, parseOwnerFilter } from "../services/userService.js";
 import { DEADLINE_WINDOW_DAYS } from "../services/constants.js";
 
@@ -40,6 +48,24 @@ export function saveMove(req, res, next) {
       res.status(error.status);
       return renderMoveForm(res, req.params.deadlineId, { form: req.body, error: error.message });
     }
+    next(error);
+  }
+}
+
+export function markDeadlineDone(req, res, next) {
+  try {
+    const deadline = findDeadline(req.params.deadlineId);
+    try {
+      completeDeadline(deadline.deadlineId, req.user);
+      setFlash(req, "success", `Marked "${deadline.title}" done.`);
+    } catch (error) {
+      if (error.status !== 400) {
+        throw error;
+      }
+      setFlash(req, "error", error.message);
+    }
+    res.redirect(returnPath(req.body, deadline.caseId));
+  } catch (error) {
     next(error);
   }
 }

@@ -83,5 +83,6 @@ export const ACTIVITY_ACTIONS = Object.freeze({
   DEADLINE_COMPLETED: "Completed deadline",
   TASK_ADDED: "Added task",
   TASK_UPDATED: "Updated task",
+  TASK_COMPLETED: "Completed task",
   CALL_LOGGED: "Logged call"
 });
