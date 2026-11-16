@@ -1,0 +1,37 @@
+<%- include("partials/header.ejs") %>
+
+<div class="page-heading">
+  <h1>Deadlines</h1>
+</div>
+<p>Open deadlines due in the next <%= windowDays %> days, plus anything overdue.</p>
+
+<% if (deadlines.length === 0) { %>
+  <p class="empty">No open deadlines in the next <%= windowDays %> days.</p>
+<% } else { %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Due</th>
+        <th>Deadline</th>
+        <th>Kind</th>
+        <th>Case</th>
+        <th>Owner</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% deadlines.forEach((deadline) => { %>
+        <tr>
+          <td class="nowrap"><span class="flag flag-<%= deadline.flag.toLowerCase().replace(" ", "-") %>"><%= deadline.flag %></span></td>
+          <td class="nowrap"><%= deadline.dueDate %></td>
+          <td><%= deadline.title %></td>
+          <td><%= deadline.kind %></td>
+          <td><a href="/cases/<%= deadline.caseId %>"><%= deadline.caption %></a></td>
+          <td><%= deadline.ownerName %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include("partials/footer.ejs") %>

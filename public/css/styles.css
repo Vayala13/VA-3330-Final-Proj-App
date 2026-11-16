@@ -297,3 +297,26 @@ body {
   color: #627d98;
   font-style: italic;
 }
+
+.flag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.flag-overdue {
+  background: #fde8e8;
+  color: #9b1c1c;
+}
+
+.flag-due-soon {
+  background: #fef3c7;
+  color: #8a5a00;
+}
+
+.flag-on-track {
+  background: #e3f4e8;
+  color: #1e6b3a;
+}
