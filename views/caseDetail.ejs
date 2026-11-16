@@ -15,6 +15,8 @@
   <p class="alert alert-success" role="status">Deadline added. It is recorded in the history below.</p>
 <% } else if (locals.deadlineMoved) { %>
   <p class="alert alert-success" role="status">Deadline moved. The old date is kept in its history.</p>
+<% } else if (locals.taskAdded) { %>
+  <p class="alert alert-success" role="status">Task added. It is recorded in the history below.</p>
 <% } %>
 
 <dl class="case-facts">
@@ -102,6 +104,79 @@
     </select>
 
     <button type="submit" class="btn">Add deadline</button>
+  </form>
+</section>
+
+<h2 id="tasks">Tasks</h2>
+
+<% if (tasks.length === 0) { %>
+  <p class="empty">No tasks on this case yet.</p>
+<% } else { %>
+  <table class="data-table">
+    <thead>
+      <tr><th></th><th>Due</th><th>Task</th><th>Priority</th><th>Owner</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <% tasks.forEach((task) => { %>
+        <% [task, ...task.subtasks].forEach((row) => { %>
+          <tr>
+            <td class="nowrap">
+              <% if (row.label) { %>
+                <span class="flag flag-<%= row.label.toLowerCase().replace(" ", "-") %>"><%= row.label %></span>
+              <% } %>
+            </td>
+            <td class="nowrap"><%= row.dueDate %></td>
+            <td class="<%= row.parentTitle ? "subtask-row" : "" %>"><%= row.title %></td>
+            <td><%= row.priority %></td>
+            <td><%= row.ownerName %></td>
+            <td class="nowrap"><%= row.status %></td>
+          </tr>
+        <% }) %>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<section class="card">
+  <h3>Add a task</h3>
+
+  <% if (locals.taskError) { %>
+    <p class="alert alert-error" role="alert"><%= taskError %></p>
+  <% } %>
+
+  <form action="/cases/<%= matter.caseId %>/tasks" method="POST" class="form">
+    <%- include("partials/csrf.ejs") %>
+
+    <label for="taskTitle">Title</label>
+    <input type="text" id="taskTitle" name="title" maxlength="200" placeholder="Motion for summary judgment" value="<%= taskForm.title || "" %>" required>
+
+    <label for="taskDueDate">Due date</label>
+    <input type="date" id="taskDueDate" name="dueDate" value="<%= taskForm.dueDate || "" %>" required>
+
+    <label for="priority">Priority</label>
+    <select id="priority" name="priority" required>
+      <% priorities.forEach((priority) => { %>
+        <option value="<%= priority %>" <%= taskForm.priority === priority ? "selected" : "" %>><%= priority %></option>
+      <% }) %>
+    </select>
+
+    <label for="taskOwnerId">Owner</label>
+    <select id="taskOwnerId" name="ownerId" required>
+      <option value="">Choose a person</option>
+      <% staff.forEach((person) => { %>
+        <option value="<%= person.userId %>" <%= String(taskForm.ownerId) === String(person.userId) ? "selected" : "" %>><%= person.name %></option>
+      <% }) %>
+    </select>
+
+    <label for="templateId">Checklist (optional)</label>
+    <select id="templateId" name="templateId">
+      <option value="">No checklist</option>
+      <% templates.forEach((template) => { %>
+        <option value="<%= template.templateId %>" <%= String(taskForm.templateId) === String(template.templateId) ? "selected" : "" %>><%= template.name %>: <%= template.subtaskTitles.join(", ") %></option>
+      <% }) %>
+    </select>
+
+    <button type="submit" class="btn">Add task</button>
   </form>
 </section>
 

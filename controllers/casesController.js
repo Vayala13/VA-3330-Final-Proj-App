@@ -11,8 +11,15 @@ import {
 } from "../services/caseService.js";
 import { getActivityForCase } from "../services/activityService.js";
 import { getDeadlinesForCase, addDeadline } from "../services/deadlineService.js";
+import { getTasksForCase, getTaskTemplates, addTask } from "../services/taskService.js";
 import { getAllUsers } from "../services/userService.js";
-import { CASE_TYPES, CASE_STATUSES, STALE_CASE_DAYS, DEADLINE_KINDS } from "../services/constants.js";
+import {
+  CASE_TYPES,
+  CASE_STATUSES,
+  STALE_CASE_DAYS,
+  DEADLINE_KINDS,
+  TASK_PRIORITIES
+} from "../services/constants.js";
 export function listCases(req, res, next) {
   try {
     const filters = parseCaseFilters(req.query);
@@ -50,6 +57,10 @@ const renderCaseDetail = (res, caseIdParam, data = {}) => {
     deadlineKinds: Object.values(DEADLINE_KINDS),
     staff: getAllUsers(),
     deadlineForm: {},
+    tasks: getTasksForCase(matter.caseId),
+    templates: getTaskTemplates(),
+    priorities: Object.values(TASK_PRIORITIES),
+    taskForm: {},
     ...data
   });
 };
@@ -60,7 +71,8 @@ export function showCase(req, res, next) {
       saved: req.query.saved === "1",
       unchanged: req.query.unchanged === "1",
       deadlineAdded: req.query.deadlineAdded === "1",
-      deadlineMoved: req.query.deadlineMoved === "1"
+      deadlineMoved: req.query.deadlineMoved === "1",
+      taskAdded: req.query.taskAdded === "1"
     });
   } catch (error) {
     next(error);
@@ -75,6 +87,19 @@ export function addCaseDeadline(req, res, next) {
     if (error.status === 400) {
       res.status(error.status);
       return renderCaseDetail(res, req.params.caseId, { deadlineForm: req.body, deadlineError: error.message });
+    }
+    next(error);
+  }
+}
+
+export function addCaseTask(req, res, next) {
+  try {
+    const { parent } = addTask(req.params.caseId, req.body, req.user);
+    res.redirect(`/cases/${parent.caseId}?taskAdded=1#tasks`);
+  } catch (error) {
+    if (error.status === 400) {
+      res.status(error.status);
+      return renderCaseDetail(res, req.params.caseId, { taskForm: req.body, taskError: error.message });
     }
     next(error);
   }
