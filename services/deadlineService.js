@@ -51,10 +51,16 @@ const toDeadlineRow = (deadline, today) => {
 };
 
 // Open deadlines due within the next 3 weeks, plus every overdue one, soonest first.
-export function listUpcomingDeadlines(today = currentDate()) {
+// Only one person's when ownerId is given.
+export function listUpcomingDeadlines(today = currentDate(), { ownerId = null } = {}) {
   const lastDay = addDays(today, DEADLINE_WINDOW_DAYS);
   return db.deadlines
-    .filter((deadline) => !deadline.isCompleted() && deadline.dueDate <= lastDay)
+    .filter(
+      (deadline) =>
+        !deadline.isCompleted() &&
+        deadline.dueDate <= lastDay &&
+        (ownerId === null || deadline.ownerId === ownerId)
+    )
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate) || a.title.localeCompare(b.title))
     .map((deadline) => toDeadlineRow(deadline, today));
 }

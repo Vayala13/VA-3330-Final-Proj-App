@@ -5,6 +5,8 @@
 </div>
 <p>Open deadlines due in the next <%= windowDays %> days, plus anything overdue.</p>
 
+<%- include("partials/ownerFilter.ejs", { ownerFilterAction: "/deadlines" }) %>
+
 <% if (deadlines.length === 0) { %>
   <p class="empty">No open deadlines in the next <%= windowDays %> days.</p>
 <% } else { %>

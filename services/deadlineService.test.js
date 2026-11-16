@@ -1,6 +1,6 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
-import { seedUsers } from "./userService.js";
+import { seedUsers, findUserByEmail } from "./userService.js";
 import { seedSampleData } from "./seedData.js";
 import { listUpcomingDeadlines } from "./deadlineService.js";
 import { DEADLINE_FLAGS } from "./constants.js";
@@ -44,4 +44,14 @@ test("rows are sorted soonest first and show names, not ids", () => {
   const dates = rows.map((row) => row.dueDate);
   assert.deepEqual(dates, [...dates].sort());
   assert.ok(rows.every((row) => row.ownerName !== "Unassigned" && row.caption !== "Unknown case"));
+});
+
+test("filtering by owner shows only that person's deadlines", () => {
+  const ana = findUserByEmail("agarza@mbmt.test");
+  const rows = listUpcomingDeadlines(TODAY, { ownerId: ana.userId });
+  assert.deepEqual(
+    rows.map((row) => row.title),
+    ["Discovery responses due", "Conflict check", "Statute of limitations review"]
+  );
+  assert.ok(rows.every((row) => row.ownerName === "Ana Garza"));
 });
