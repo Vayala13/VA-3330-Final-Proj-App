@@ -1,6 +1,6 @@
 # LAW FIRM Case Tracker
 
-A case tracker for a small civil-litigation law firm. It replaces two spreadsheets (inquiries and active cases), a handwritten deadline calendar, and staff memory of who last worked a case with one place to track cases, deadlines, and daily tasks.
+A case tracker for a small civil-litigation law firm intended to help paralegals in their day-today work. It replaces two spreadsheets (inquiries and active cases), a handwritten deadline calendar, and staff memory of who last worked a case with one place to track cases, deadlines, and daily tasks.
 
 CSCI 3330 Exam #2 project by Viviana Ayala.
 
