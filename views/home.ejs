@@ -1,6 +1,28 @@
 <%- include("partials/header.ejs") %>
 
-<h1>MBMT Case Tracker</h1>
+<h1>Welcome, <%= currentUser.name %></h1>
 <p>One place to track cases, deadlines, and daily tasks.</p>
+
+<div class="dashboard">
+  <a href="/deadlines?owner=mine" class="dashboard-card <%= dashboard.myOverdueDeadlines > 0 ? "dashboard-alert" : "" %>">
+    <span class="dashboard-number"><%= dashboard.myOverdueDeadlines %></span>
+    <span>of my deadlines overdue</span>
+    <span class="dashboard-sub"><%= dashboard.myDueSoonDeadlines %> more due in the next 7 days</span>
+  </a>
+
+  <a href="/tasks?owner=mine" class="dashboard-card <%= dashboard.myTasksNeedingAttention > 0 ? "dashboard-alert" : "" %>">
+    <span class="dashboard-number"><%= dashboard.myTasksNeedingAttention %></span>
+    <span>of my tasks overdue or due today</span>
+    <span class="dashboard-sub"><%= dashboard.myOpenTasks %> open tasks in total</span>
+  </a>
+
+  <a href="/cases/stale" class="dashboard-card">
+    <span class="dashboard-number"><%= dashboard.staleCases %></span>
+    <span>stale cases</span>
+    <span class="dashboard-sub">Active, untouched for over a year</span>
+  </a>
+</div>
+
+<p><a href="/cases">See all cases</a></p>
 
 <%- include("partials/footer.ejs") %>
