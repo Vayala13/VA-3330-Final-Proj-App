@@ -2,6 +2,8 @@
   <% if (locals.currentUser) { %>
     <a href="/">Home</a>
     <a href="/cases">Cases</a>
+    <a href="/deadlines">Deadlines</a>
+    <a href="/cases/stale">Stale cases</a>
     <% if (currentUser.role === "admin") { %>
       <a href="/staff">Staff</a>
     <% } %>
