@@ -22,6 +22,10 @@ export class Task {
     return this.status === TASK_STATUSES.DONE;
   }
 
+  complete() {
+    this.status = TASK_STATUSES.DONE;
+  }
+
   isOverdue(today) {
     return !this.isDone() && this.dueDate < today;
   }

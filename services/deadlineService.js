@@ -135,6 +135,24 @@ export function addDeadline(caseIdParam, { title, kind, dueDate, ownerId } = {},
   return deadline;
 }
 
+export function completeDeadline(deadlineIdParam, user, now = new Date()) {
+  const deadline = findDeadline(deadlineIdParam);
+  if (deadline.isCompleted()) {
+    throw badInput("This deadline is already done.");
+  }
+  deadline.complete(currentDate(now));
+  recordActivity(
+    {
+      caseId: deadline.caseId,
+      userId: user.userId,
+      action: ACTIVITY_ACTIONS.DEADLINE_COMPLETED,
+      detail: `Marked "${deadline.title}" done (was due ${deadline.dueDate}).`
+    },
+    now
+  );
+  return deadline;
+}
+
 // The only way to change a deadline's due date. The old date is kept as a DeadlineChange.
 export function moveDeadline(deadlineIdParam, { newDate, reason } = {}, user, now = new Date()) {
   const deadline = findDeadline(deadlineIdParam);

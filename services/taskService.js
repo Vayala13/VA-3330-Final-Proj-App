@@ -77,6 +77,40 @@ export function getTasksForCase(caseId, today = currentDate()) {
     }));
 }
 
+export function findTask(taskIdParam) {
+  const taskId = Number(taskIdParam);
+  const task = Number.isInteger(taskId) ? db.tasks.find((t) => t.taskId === taskId) : undefined;
+  if (!task) {
+    const error = new Error("Task not found.");
+    error.status = 404;
+    throw error;
+  }
+  return task;
+}
+
+// A task with open subtasks can't be marked done until they are.
+export function completeTask(taskIdParam, user, now = new Date()) {
+  const task = findTask(taskIdParam);
+  if (task.isDone()) {
+    throw badInput("This task is already done.");
+  }
+  const openSubtasks = db.tasks.filter((t) => t.parentTaskId === task.taskId && !t.isDone());
+  if (openSubtasks.length > 0) {
+    throw badInput(`Finish these subtasks first: ${openSubtasks.map((t) => t.title).join(", ")}.`);
+  }
+  task.complete();
+  recordActivity(
+    {
+      caseId: task.caseId,
+      userId: user.userId,
+      action: ACTIVITY_ACTIONS.TASK_COMPLETED,
+      detail: `Marked task "${task.title}" done.`
+    },
+    now
+  );
+  return task;
+}
+
 export function getTaskTemplates() {
   return [...db.taskTemplates];
 }
