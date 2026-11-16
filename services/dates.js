@@ -9,7 +9,8 @@ export function isValidDateString(value) {
   if (typeof value !== "string" || !DATE_PATTERN.test(value)) {
     return false;
   }
-  return toUtc(value).toISOString().slice(0, 10) === value;
+  const date = toUtc(value);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 export function today(now = new Date()) {

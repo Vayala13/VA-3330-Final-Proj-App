@@ -7,7 +7,8 @@ import {
   addCase,
   showEditCaseForm,
   saveCase,
-  addCaseDeadline
+  addCaseDeadline,
+  addCaseTask
 } from "../controllers/casesController.js";
 import { requireStatusPermission } from "../middleware/auth.js";
 
@@ -21,5 +22,6 @@ router.get("/:caseId", showCase);
 router.get("/:caseId/edit", showEditCaseForm);
 router.post("/:caseId", requireStatusPermission, saveCase);
 router.post("/:caseId/deadlines", addCaseDeadline);
+router.post("/:caseId/tasks", addCaseTask);
 
 export default router;
