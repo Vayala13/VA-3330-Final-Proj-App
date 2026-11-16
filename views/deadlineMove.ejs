@@ -1,0 +1,45 @@
+<%- include("partials/header.ejs") %>
+
+<p><a href="/cases/<%= deadline.caseId %>#deadlines">Cancel</a></p>
+
+<section class="card">
+  <h1>Move deadline</h1>
+
+  <dl class="case-facts">
+    <div><dt>Deadline</dt><dd><%= deadline.title %></dd></div>
+    <div><dt>Case</dt><dd><a href="/cases/<%= deadline.caseId %>"><%= deadline.caption %></a></dd></div>
+    <div><dt>Current due date</dt><dd><%= deadline.dueDate %></dd></div>
+    <div><dt>Owner</dt><dd><%= deadline.ownerName %></dd></div>
+  </dl>
+
+  <% if (deadline.history.length > 0) { %>
+    <h2>Earlier moves</h2>
+    <ul class="deadline-history">
+      <% deadline.history.forEach((change) => { %>
+        <li>Moved from <%= change.oldDate %> to <%= change.newDate %> by <%= change.changedByName %> on <%= change.changedDate %>: <%= change.reason %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <% if (deadline.completedDate) { %>
+    <p class="alert alert-info" role="status">This deadline was completed on <%= deadline.completedDate %>, so it can't be moved.</p>
+  <% } else { %>
+    <% if (locals.error) { %>
+      <p class="alert alert-error" role="alert"><%= error %></p>
+    <% } %>
+
+    <form action="/deadlines/<%= deadline.deadlineId %>/move" method="POST" class="form">
+      <%- include("partials/csrf.ejs") %>
+
+      <label for="newDate">New due date</label>
+      <input type="date" id="newDate" name="newDate" value="<%= form.newDate || "" %>" required>
+
+      <label for="reason">Reason for the move</label>
+      <textarea id="reason" name="reason" maxlength="200" rows="3" placeholder="Court reset the hearing." required><%= form.reason || "" %></textarea>
+
+      <button type="submit" class="btn">Move deadline</button>
+    </form>
+  <% } %>
+</section>
+
+<%- include("partials/footer.ejs") %>

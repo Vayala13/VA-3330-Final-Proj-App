@@ -10,7 +10,9 @@ import {
   updateCase
 } from "../services/caseService.js";
 import { getActivityForCase } from "../services/activityService.js";
-import { CASE_TYPES, CASE_STATUSES, STALE_CASE_DAYS } from "../services/constants.js";
+import { getDeadlinesForCase, addDeadline } from "../services/deadlineService.js";
+import { getAllUsers } from "../services/userService.js";
+import { CASE_TYPES, CASE_STATUSES, STALE_CASE_DAYS, DEADLINE_KINDS } from "../services/constants.js";
 export function listCases(req, res, next) {
   try {
     const filters = parseCaseFilters(req.query);
@@ -38,17 +40,42 @@ export function listStale(req, res, next) {
   }
 }
 
+const renderCaseDetail = (res, caseIdParam, data = {}) => {
+  const matter = getCaseDetails(caseIdParam);
+  res.render("caseDetail.ejs", {
+    title: matter.caption,
+    matter,
+    activities: getActivityForCase(matter.caseId),
+    deadlines: getDeadlinesForCase(matter.caseId),
+    deadlineKinds: Object.values(DEADLINE_KINDS),
+    staff: getAllUsers(),
+    deadlineForm: {},
+    ...data
+  });
+};
+
 export function showCase(req, res, next) {
   try {
-    const matter = getCaseDetails(req.params.caseId);
-    res.render("caseDetail.ejs", {
-      title: matter.caption,
-      matter,
-      activities: getActivityForCase(matter.caseId),
+    renderCaseDetail(res, req.params.caseId, {
       saved: req.query.saved === "1",
-      unchanged: req.query.unchanged === "1"
+      unchanged: req.query.unchanged === "1",
+      deadlineAdded: req.query.deadlineAdded === "1",
+      deadlineMoved: req.query.deadlineMoved === "1"
     });
   } catch (error) {
+    next(error);
+  }
+}
+
+export function addCaseDeadline(req, res, next) {
+  try {
+    const deadline = addDeadline(req.params.caseId, req.body, req.user);
+    res.redirect(`/cases/${deadline.caseId}?deadlineAdded=1#deadlines`);
+  } catch (error) {
+    if (error.status === 400) {
+      res.status(error.status);
+      return renderCaseDetail(res, req.params.caseId, { deadlineForm: req.body, deadlineError: error.message });
+    }
     next(error);
   }
 }

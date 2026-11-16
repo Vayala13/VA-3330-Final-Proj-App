@@ -7,10 +7,14 @@
   <a href="/cases/<%= matter.caseId %>/edit" class="btn">Edit case</a>
 </div>
 
-<% if (saved) { %>
+<% if (locals.saved) { %>
   <p class="alert alert-success" role="status">Case saved. The change is recorded in the history below.</p>
-<% } else if (unchanged) { %>
+<% } else if (locals.unchanged) { %>
   <p class="alert alert-info" role="status">No changes to save.</p>
+<% } else if (locals.deadlineAdded) { %>
+  <p class="alert alert-success" role="status">Deadline added. It is recorded in the history below.</p>
+<% } else if (locals.deadlineMoved) { %>
+  <p class="alert alert-success" role="status">Deadline moved. The old date is kept in its history.</p>
 <% } %>
 
 <dl class="case-facts">
@@ -21,6 +25,85 @@
   <div><dt>Lead attorney</dt><dd><%= matter.leadAttorneyName %></dd></div>
   <div><dt>Last touched</dt><dd><%= matter.lastTouchedDate %> by <%= matter.lastTouchedByName %></dd></div>
 </dl>
+
+<h2 id="deadlines">Deadlines</h2>
+
+<% if (deadlines.length === 0) { %>
+  <p class="empty">No deadlines on this case yet.</p>
+<% } else { %>
+  <table class="data-table">
+    <thead>
+      <tr><th>Status</th><th>Due</th><th>Deadline</th><th>Kind</th><th>Owner</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% deadlines.forEach((deadline) => { %>
+        <tr>
+          <td class="nowrap">
+            <% if (deadline.flag) { %>
+              <span class="flag flag-<%= deadline.flag.toLowerCase().replace(" ", "-") %>"><%= deadline.flag %></span>
+            <% } else { %>
+              <span class="flag flag-done">Done <%= deadline.completedDate %></span>
+            <% } %>
+          </td>
+          <td class="nowrap"><%= deadline.dueDate %></td>
+          <td>
+            <%= deadline.title %>
+            <% if (deadline.history.length > 0) { %>
+              <ul class="deadline-history">
+                <% deadline.history.forEach((change) => { %>
+                  <li>Moved from <%= change.oldDate %> to <%= change.newDate %> by <%= change.changedByName %> on <%= change.changedDate %>: <%= change.reason %></li>
+                <% }) %>
+              </ul>
+            <% } %>
+          </td>
+          <td><%= deadline.kind %></td>
+          <td><%= deadline.ownerName %></td>
+          <td class="nowrap">
+            <% if (!deadline.completedDate) { %>
+              <a href="/deadlines/<%= deadline.deadlineId %>/move">Move</a>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<section class="card">
+  <h3>Add a deadline</h3>
+
+  <% if (locals.deadlineError) { %>
+    <p class="alert alert-error" role="alert"><%= deadlineError %></p>
+  <% } %>
+
+  <form action="/cases/<%= matter.caseId %>/deadlines" method="POST" class="form">
+    <%- include("partials/csrf.ejs") %>
+
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" maxlength="200" placeholder="Response to motion" value="<%= deadlineForm.title || "" %>" required>
+
+    <label for="kind">Kind</label>
+    <select id="kind" name="kind" required>
+      <option value="">Choose a kind</option>
+      <% deadlineKinds.forEach((kind) => { %>
+        <option value="<%= kind %>" <%= deadlineForm.kind === kind ? "selected" : "" %>><%= kind %></option>
+      <% }) %>
+    </select>
+
+    <label for="dueDate">Due date</label>
+    <input type="date" id="dueDate" name="dueDate" value="<%= deadlineForm.dueDate || "" %>" required>
+
+    <label for="ownerId">Owner</label>
+    <select id="ownerId" name="ownerId" required>
+      <option value="">Choose a person</option>
+      <% staff.forEach((person) => { %>
+        <option value="<%= person.userId %>" <%= String(deadlineForm.ownerId) === String(person.userId) ? "selected" : "" %>><%= person.name %></option>
+      <% }) %>
+    </select>
+
+    <button type="submit" class="btn">Add deadline</button>
+  </form>
+</section>
 
 <h2>History</h2>
 
