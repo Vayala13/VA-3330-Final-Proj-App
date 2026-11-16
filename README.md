@@ -46,7 +46,7 @@ All data is kept in memory and reset to the sample data each time the server sta
 | Page | Address | What it shows |
 |---|---|---|
 | Home | `/` | Counts of my overdue deadlines, my tasks due today, and stale cases |
-| To-do | `/tasks` | Open tasks, overdue first, then due today, then by priority |
+| To-do | `/tasks` | Open tasks, overdue first, then due today, then by priority, each with a Mark done button |
 | Cases | `/cases` | All cases grouped by status, with attorney and type filters |
 | Case detail | `/cases/:caseId` | Case facts, deadlines, tasks, and the full history, with forms to add a deadline or task |
 | New / edit case | `/cases/new`, `/cases/:caseId/edit` | Form to create or update a case |
@@ -64,7 +64,7 @@ Log in as `agarza@mbmt.test` unless noted.
 3. **Stale cases:** click **Stale cases**. Sandoval (540 days), Pena (420), and Moreno (380) appear in that order.
 4. **Audit trail:** open any case and edit it, add a deadline, or add a task. The History table at the bottom shows who, what, and when.
 5. **Deadline changes:** on a case page, click **Move** next to a deadline. A blank reason is rejected; a real move appears under the deadline with the old date.
-6. **Daily to-do list:** click **To-do**. On a case page, choose the Motion or Deposition checklist when adding a task to build dated subtasks.
+6. **Daily to-do list:** click **To-do**. On a case page, choose the Motion or Deposition checklist when adding a task to build dated subtasks. Click **Mark done** on any task or deadline to finish it; it leaves the list and appears in the case History. A task with open subtasks can't be marked done until its subtasks are.
 7. **Ownership:** on **To-do** or **Deadlines**, choose **My work** to see only your own items.
 
 ## Security
