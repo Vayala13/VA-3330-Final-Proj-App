@@ -20,6 +20,7 @@
         <th>Case</th>
         <th>Owner</th>
         <th>Status</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -41,6 +42,9 @@
           <td><a href="/cases/<%= task.caseId %>"><%= task.caption %></a></td>
           <td><%= task.ownerName %></td>
           <td class="nowrap"><%= task.status %></td>
+          <td class="nowrap">
+            <%- include("partials/markDone.ejs", { markDoneAction: `/tasks/${task.taskId}/complete`, markDoneFrom: "tasks" }) %>
+          </td>
         </tr>
       <% }) %>
     </tbody>

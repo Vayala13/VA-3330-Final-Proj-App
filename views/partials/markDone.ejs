@@ -1,0 +1,6 @@
+<form action="<%= markDoneAction %>" method="POST" class="inline-form">
+  <%- include("csrf.ejs") %>
+  <input type="hidden" name="from" value="<%= markDoneFrom %>">
+  <input type="hidden" name="owner" value="<%= locals.owner || "" %>">
+  <button type="submit" class="btn-small">Mark done</button>
+</form>

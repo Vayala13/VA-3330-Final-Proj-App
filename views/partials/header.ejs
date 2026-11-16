@@ -15,3 +15,6 @@
     </div>
   </header>
   <main class="container">
+    <% if (locals.flash) { %>
+      <p class="alert alert-<%= flash.type === "error" ? "error" : "success" %>" role="<%= flash.type === "error" ? "alert" : "status" %>"><%= flash.text %></p>
+    <% } %>

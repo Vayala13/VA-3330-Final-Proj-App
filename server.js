@@ -15,6 +15,7 @@ import {
   ensureAuthenticated
 } from "./middleware/auth.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
+import { exposeFlash } from "./middleware/flash.js";
 import { seedUsers } from "./services/userService.js";
 import { seedSampleData } from "./services/seedData.js";
 
@@ -33,6 +34,7 @@ app.use(passportInitialize);
 app.use(passportSession);
 app.use(csrfProtection);
 app.use(exposeCurrentUser);
+app.use(exposeFlash);
 
 app.use("/", authRouter);
 

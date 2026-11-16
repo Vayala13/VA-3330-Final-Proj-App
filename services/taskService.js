@@ -50,6 +50,7 @@ const toTodoRow = (task, today) => ({
   dueDate: task.dueDate,
   priority: task.priority,
   status: task.status,
+  done: task.isDone(),
   label: urgencyLabel(task, today)
 });
 

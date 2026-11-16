@@ -63,6 +63,7 @@
           <td class="nowrap">
             <% if (!deadline.completedDate) { %>
               <a href="/deadlines/<%= deadline.deadlineId %>/move">Move</a>
+              <%- include("partials/markDone.ejs", { markDoneAction: `/deadlines/${deadline.deadlineId}/complete`, markDoneFrom: "case" }) %>
             <% } %>
           </td>
         </tr>
@@ -114,7 +115,7 @@
 <% } else { %>
   <table class="data-table">
     <thead>
-      <tr><th></th><th>Due</th><th>Task</th><th>Priority</th><th>Owner</th><th>Status</th></tr>
+      <tr><th></th><th>Due</th><th>Task</th><th>Priority</th><th>Owner</th><th>Status</th><th></th></tr>
     </thead>
     <tbody>
       <% tasks.forEach((task) => { %>
@@ -130,6 +131,11 @@
             <td><%= row.priority %></td>
             <td><%= row.ownerName %></td>
             <td class="nowrap"><%= row.status %></td>
+            <td class="nowrap">
+              <% if (!row.done) { %>
+                <%- include("partials/markDone.ejs", { markDoneAction: `/tasks/${row.taskId}/complete`, markDoneFrom: "case" }) %>
+              <% } %>
+            </td>
           </tr>
         <% }) %>
       <% }) %>

@@ -19,6 +19,7 @@
         <th>Kind</th>
         <th>Case</th>
         <th>Owner</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -30,6 +31,9 @@
           <td><%= deadline.kind %></td>
           <td><a href="/cases/<%= deadline.caseId %>"><%= deadline.caption %></a></td>
           <td><%= deadline.ownerName %></td>
+          <td class="nowrap">
+            <%- include("partials/markDone.ejs", { markDoneAction: `/deadlines/${deadline.deadlineId}/complete`, markDoneFrom: "deadlines" }) %>
+          </td>
         </tr>
       <% }) %>
     </tbody>
