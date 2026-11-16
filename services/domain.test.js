@@ -13,7 +13,7 @@ const deadlineDueIn = (days, completedDate = null) =>
   new Deadline({ deadlineId: 1, caseId: 1, title: "Answer due", kind: "Court filing", dueDate: addDays(TODAY, days), ownerId: 1, completedDate });
 
 const task = (overrides = {}) =>
-  new Task({ taskId: 1, caseId: 1, ownerId: 1, dueDate: TODAY, priority: TASK_PRIORITIES.MEDIUM, status: TASK_STATUSES.OPEN, ...overrides });
+  new Task({ taskId: 1, caseId: 1, title: "Draft the motion", ownerId: 1, dueDate: TODAY, priority: TASK_PRIORITIES.MEDIUM, status: TASK_STATUSES.OPEN, ...overrides });
 
 test("dates: adding days crosses month and year boundaries", () => {
   assert.equal(addDays("2026-11-30", 1), "2026-12-01");

@@ -3,10 +3,11 @@ import { TASK_PRIORITIES, TASK_STATUSES } from "./constants.js";
 const PRIORITY_ORDER = Object.values(TASK_PRIORITIES);
 
 export class Task {
-  constructor({ taskId, caseId, parentTaskId = null, ownerId, dueDate, priority, status }) {
+  constructor({ taskId, caseId, parentTaskId = null, title, ownerId, dueDate, priority, status }) {
     this.taskId = taskId;
     this.caseId = caseId;
     this.parentTaskId = parentTaskId;
+    this.title = title;
     this.ownerId = ownerId;
     this.dueDate = dueDate;
     this.priority = priority;
