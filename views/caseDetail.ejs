@@ -33,7 +33,7 @@
 <% } else { %>
   <table class="data-table">
     <thead>
-      <tr><th>Status</th><th>Due</th><th>Deadline</th><th>Kind</th><th>Owner</th></tr>
+      <tr><th>Status</th><th>Due</th><th>Deadline</th><th>Kind</th><th>Owner</th><th></th></tr>
     </thead>
     <tbody>
       <% deadlines.forEach((deadline) => { %>
@@ -58,6 +58,11 @@
           </td>
           <td><%= deadline.kind %></td>
           <td><%= deadline.ownerName %></td>
+          <td class="nowrap">
+            <% if (!deadline.completedDate) { %>
+              <a href="/deadlines/<%= deadline.deadlineId %>/move">Move</a>
+            <% } %>
+          </td>
         </tr>
       <% }) %>
     </tbody>

@@ -93,6 +93,12 @@ export function findDeadline(deadlineIdParam) {
   return deadline;
 }
 
+// One deadline with names filled in and its move history, for the move page.
+export function getDeadlineDetails(deadlineIdParam, today = currentDate()) {
+  const deadline = findDeadline(deadlineIdParam);
+  return { ...toDeadlineRow(deadline, today), history: getDeadlineHistory(deadline.deadlineId) };
+}
+
 export function addDeadline(caseIdParam, { title, kind, dueDate, ownerId } = {}, user, now = new Date()) {
   const matter = findCase(caseIdParam);
   const fields = {
