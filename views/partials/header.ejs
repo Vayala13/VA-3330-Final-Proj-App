@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %> | MBMT Case Tracker</title>
+  <title><%= locals.title ? `${locals.title} | ` : "" %>MBMT Case Tracker</title>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
