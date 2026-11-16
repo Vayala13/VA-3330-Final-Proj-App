@@ -1,0 +1,37 @@
+<%- include("partials/header.ejs") %>
+
+<div class="page-heading">
+  <h1>Stale cases</h1>
+</div>
+<p>Active cases nobody has touched in more than <%= staleDays %> days, quietest first.</p>
+
+<% if (cases.length === 0) { %>
+  <p class="empty">No stale cases. Every active case has been touched in the last <%= staleDays %> days.</p>
+<% } else { %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Days quiet</th>
+        <th>Caption</th>
+        <th>Client</th>
+        <th>Type</th>
+        <th>Lead attorney</th>
+        <th>Last touched</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% cases.forEach((matter) => { %>
+        <tr>
+          <td class="nowrap"><span class="flag flag-overdue"><%= matter.daysQuiet %> days</span></td>
+          <td><a href="/cases/<%= matter.caseId %>"><%= matter.caption %></a></td>
+          <td><%= matter.clientName %></td>
+          <td><%= matter.type %></td>
+          <td><%= matter.leadAttorneyName %></td>
+          <td><%= matter.lastTouchedDate %> by <%= matter.lastTouchedByName %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include("partials/footer.ejs") %>

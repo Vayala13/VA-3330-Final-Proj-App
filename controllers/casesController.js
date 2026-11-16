@@ -1,5 +1,6 @@
 import {
   listCasesByStatus,
+  listStaleCases,
   parseCaseFilters,
   getAttorneys,
   findCase,
@@ -9,7 +10,7 @@ import {
   updateCase
 } from "../services/caseService.js";
 import { getActivityForCase } from "../services/activityService.js";
-import { CASE_TYPES, CASE_STATUSES } from "../services/constants.js";
+import { CASE_TYPES, CASE_STATUSES, STALE_CASE_DAYS } from "../services/constants.js";
 export function listCases(req, res, next) {
   try {
     const filters = parseCaseFilters(req.query);
@@ -19,6 +20,18 @@ export function listCases(req, res, next) {
       attorneys: getAttorneys(),
       caseTypes: Object.values(CASE_TYPES),
       filters
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export function listStale(req, res, next) {
+  try {
+    res.render("staleCases.ejs", {
+      title: "Stale cases",
+      cases: listStaleCases(),
+      staleDays: STALE_CASE_DAYS
     });
   } catch (error) {
     next(error);
