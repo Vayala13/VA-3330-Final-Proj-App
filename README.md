@@ -41,11 +41,37 @@ All data is kept in memory and reset to the sample data each time the server sta
 6. **Daily to-do list:** one list sorted overdue first, then due today, then by priority.
 7. **Ownership:** any task or deadline can be assigned to a named person, and each person can view only their own work.
 
+## Pages
+
+| Page | Address | What it shows |
+|---|---|---|
+| Home | `/` | Counts of my overdue deadlines, my tasks due today, and stale cases |
+| To-do | `/tasks` | Open tasks, overdue first, then due today, then by priority |
+| Cases | `/cases` | All cases grouped by status, with attorney and type filters |
+| Case detail | `/cases/:caseId` | Case facts, deadlines, tasks, and the full history, with forms to add a deadline or task |
+| New / edit case | `/cases/new`, `/cases/:caseId/edit` | Form to create or update a case |
+| Deadlines | `/deadlines` | Open deadlines in the next 3 weeks, flagged Overdue, Due soon, or On track |
+| Move deadline | `/deadlines/:deadlineId/move` | Form to change a due date, with a required reason |
+| Stale cases | `/cases/stale` | Active cases untouched for more than a year |
+| Staff | `/staff` | Staff accounts and a form to add one (admins only) |
+
+## How to see each requirement
+
+Log in as `agarza@mbmt.test` unless noted.
+
+1. **Deadline view:** click **Deadlines**. 9 deadlines show red Overdue, yellow Due soon, or green On track.
+2. **Case list:** click **Cases**, then filter by an attorney or case type.
+3. **Stale cases:** click **Stale cases**. Sandoval (540 days), Pena (420), and Moreno (380) appear in that order.
+4. **Audit trail:** open any case and edit it, add a deadline, or add a task. The History table at the bottom shows who, what, and when.
+5. **Deadline changes:** on a case page, click **Move** next to a deadline. A blank reason is rejected; a real move appears under the deadline with the old date.
+6. **Daily to-do list:** click **To-do**. On a case page, choose the Motion or Deposition checklist when adding a task to build dated subtasks.
+7. **Ownership:** on **To-do** or **Deadlines**, choose **My work** to see only your own items.
+
 ## Security
 
 - Staff login with passwords hashed by bcrypt (salt rounds 10); plain-text passwords are never stored.
 - Every page except login requires a signed-in user.
-- Role checks: only admins can view or add staff accounts.
+- Role checks: only admins can view or add staff accounts, and only attorneys and admins can set a case to Closed or Referred out.
 - CSRF tokens on every form that changes data.
 - Login rate limit: 5 failed attempts locks that visitor out for 15 minutes.
 - Security headers with helmet; error pages never show internal details.
@@ -57,7 +83,7 @@ Node.js, Express, EJS templates with partials, HTML, CSS, and JavaScript. No dat
 ## Project structure
 
 ```
-public/        static files (css, images, js)
+public/        static files (css, images, js; js/charCounter.js counts characters in the move reason)
 views/         EJS page templates
   partials/    header, nav, footer shared by every page
 routes/        map URLs to controller functions
