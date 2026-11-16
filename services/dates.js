@@ -12,8 +12,7 @@ export function isValidDateString(value) {
   return toUtc(value).toISOString().slice(0, 10) === value;
 }
 
-export function today() {
-  const now = new Date();
+export function today(now = new Date()) {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
   return `${now.getFullYear()}-${month}-${day}`;

@@ -16,6 +16,9 @@ export const CASE_STATUSES = Object.freeze({
   CLOSED: "Closed"
 });
 
+// Only attorneys and admins can move a case into one of these statuses.
+export const ATTORNEY_ONLY_STATUSES = Object.freeze([CASE_STATUSES.REFERRED_OUT, CASE_STATUSES.CLOSED]);
+
 export const CASE_TYPES = Object.freeze({
   PERSONAL_INJURY: "Personal injury",
   CONTRACT_DISPUTE: "Contract dispute",

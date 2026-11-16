@@ -5,3 +5,19 @@ export class ValidationError extends Error {
     this.status = 400;
   }
 }
+
+export class ForbiddenError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ForbiddenError";
+    this.status = 403;
+  }
+}
+
+export class NotFoundError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "NotFoundError";
+    this.status = 404;
+  }
+}

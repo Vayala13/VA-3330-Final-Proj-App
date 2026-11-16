@@ -1,0 +1,51 @@
+<%- include("partials/header.ejs") %>
+
+<p><a href="/cases">Back to cases</a></p>
+
+<section class="card">
+  <h1><%= title %></h1>
+
+  <% if (locals.error) { %>
+    <p class="alert alert-error" role="alert"><%= error %></p>
+  <% } %>
+
+  <form action="<%= action %>" method="POST" class="form">
+    <%- include("partials/csrf.ejs") %>
+
+    <label for="caption">Caption</label>
+    <input type="text" id="caption" name="caption" maxlength="200" placeholder="Smith v. Acme Corp." value="<%= form.caption || "" %>" required>
+
+    <label for="causeNumber">Cause number</label>
+    <input type="text" id="causeNumber" name="causeNumber" maxlength="200" placeholder="2026-CI-01234 or Not yet filed" value="<%= form.causeNumber || "" %>" required>
+
+    <label for="clientName">Client name</label>
+    <input type="text" id="clientName" name="clientName" maxlength="200" value="<%= form.clientName || "" %>" required>
+
+    <label for="type">Case type</label>
+    <select id="type" name="type" required>
+      <option value="">Choose a type</option>
+      <% caseTypes.forEach((caseType) => { %>
+        <option value="<%= caseType %>" <%= form.type === caseType ? "selected" : "" %>><%= caseType %></option>
+      <% }) %>
+    </select>
+
+    <label for="status">Status</label>
+    <select id="status" name="status" required>
+      <% statuses.forEach((status) => { %>
+        <option value="<%= status %>" <%= form.status === status ? "selected" : "" %>><%= status %></option>
+      <% }) %>
+    </select>
+
+    <label for="leadAttorneyId">Lead attorney</label>
+    <select id="leadAttorneyId" name="leadAttorneyId" required>
+      <option value="">Choose an attorney</option>
+      <% attorneys.forEach((attorney) => { %>
+        <option value="<%= attorney.userId %>" <%= String(form.leadAttorneyId) === String(attorney.userId) ? "selected" : "" %>><%= attorney.name %></option>
+      <% }) %>
+    </select>
+
+    <button type="submit" class="btn">Save case</button>
+  </form>
+</section>
+
+<%- include("partials/footer.ejs") %>

@@ -198,6 +198,28 @@ body {
   font-weight: 600;
 }
 
+.alert-info {
+  background: #e8f1fb;
+  color: #1f3a5f;
+  border: 1px solid #b6d0ee;
+}
+
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-heading .btn {
+  margin-top: 0;
+  text-decoration: none;
+}
+
+.data-table a {
+  color: #1f3a5f;
+  font-weight: 600;
+}
+
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
