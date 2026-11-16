@@ -3,7 +3,14 @@ import { getAllUsers, findUserById } from "./userService.js";
 import { recordActivity } from "./activityService.js";
 import { Case } from "./Case.js";
 import { today } from "./dates.js";
-import { CASE_STATUSES, CASE_TYPES, ATTORNEY_ONLY_STATUSES, ROLES, ACTIVITY_ACTIONS } from "./constants.js";
+import {
+  CASE_STATUSES,
+  CASE_TYPES,
+  ATTORNEY_ONLY_STATUSES,
+  ROLES,
+  ACTIVITY_ACTIONS,
+  STALE_CASE_DAYS
+} from "./constants.js";
 import { isGoodStringParam } from "./validation.js";
 const MAX_TEXT_LENGTH = 200;
 
@@ -72,6 +79,14 @@ export function listCasesByStatus({ attorneyId = null, type = null } = {}) {
       .sort((a, b) => a.caption.localeCompare(b.caption))
       .map(toListRow)
   }));
+}
+
+// Active cases nobody has touched in more than STALE_CASE_DAYS, longest-quiet first.
+export function listStaleCases(currentDate = today()) {
+  return db.cases
+    .filter((matter) => matter.isActive() && matter.daysSinceTouched(currentDate) > STALE_CASE_DAYS)
+    .sort((a, b) => a.lastTouchedDate.localeCompare(b.lastTouchedDate))
+    .map((matter) => ({ ...toListRow(matter), daysQuiet: matter.daysSinceTouched(currentDate) }));
 }
 
 // One case with people's names filled in, for the case detail page.
