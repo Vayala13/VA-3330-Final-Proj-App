@@ -347,3 +347,41 @@ body {
   padding-left: 1.75rem;
   color: #3e4c59;
 }
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid #d9e2ec;
+  border-radius: 8px;
+  color: #1f2933;
+  text-decoration: none;
+}
+
+.dashboard-card:hover {
+  border-color: #1f3a5f;
+}
+
+.dashboard-alert {
+  border-left: 4px solid #9b1c1c;
+}
+
+.dashboard-number {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.dashboard-sub {
+  color: #627d98;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
