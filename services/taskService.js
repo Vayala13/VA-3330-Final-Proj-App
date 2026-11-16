@@ -1,7 +1,19 @@
-import { db } from "./dataStore.js";
+import { db, nextId } from "./dataStore.js";
 import { findUserById } from "./userService.js";
-import { today as currentDate } from "./dates.js";
-import { TODO_LABELS } from "./constants.js";
+import { recordActivity } from "./activityService.js";
+import { findCase } from "./caseService.js";
+import { Task } from "./Task.js";
+import { isValidDateString, today as currentDate } from "./dates.js";
+import { TODO_LABELS, TASK_PRIORITIES, TASK_STATUSES, ACTIVITY_ACTIONS } from "./constants.js";
+import { isGoodStringParam } from "./validation.js";
+
+const MAX_TEXT_LENGTH = 200;
+
+const badInput = (message) => {
+  const error = new Error(message);
+  error.status = 400;
+  return error;
+};
 
 // 0 = overdue, 1 = due today, 2 = due later.
 const urgencyRank = (task, today) => {
@@ -47,4 +59,93 @@ export function listTodo({ ownerId = null } = {}, today = currentDate()) {
     .filter((task) => !task.isDone() && (ownerId === null || task.ownerId === ownerId))
     .sort((a, b) => compareTodo(a, b, today))
     .map((task) => toTodoRow(task, today));
+}
+
+// One case's top-level tasks, soonest first, each with its subtasks in due-date order.
+export function getTasksForCase(caseId, today = currentDate()) {
+  const byDueDate = (a, b) => a.dueDate.localeCompare(b.dueDate) || a.title.localeCompare(b.title);
+  const caseTasks = db.tasks.filter((task) => task.caseId === caseId);
+  return caseTasks
+    .filter((task) => !task.isSubtask())
+    .sort(byDueDate)
+    .map((parent) => ({
+      ...toTodoRow(parent, today),
+      subtasks: caseTasks
+        .filter((task) => task.parentTaskId === parent.taskId)
+        .sort(byDueDate)
+        .map((task) => toTodoRow(task, today))
+    }));
+}
+
+export function getTaskTemplates() {
+  return [...db.taskTemplates];
+}
+
+const findTemplate = (templateIdParam) => {
+  if (!isGoodStringParam(templateIdParam)) {
+    return null;
+  }
+  const template = db.taskTemplates.find((t) => t.templateId === Number(templateIdParam));
+  if (!template) {
+    throw badInput("Choose a checklist from the list.");
+  }
+  return template;
+};
+
+function validateTaskInput({ title, dueDate, priority, ownerId } = {}) {
+  if (!isGoodStringParam(title)) {
+    throw badInput("Title is required.");
+  }
+  if (title.trim().length > MAX_TEXT_LENGTH) {
+    throw badInput(`Title must be ${MAX_TEXT_LENGTH} characters or fewer.`);
+  }
+  if (!isValidDateString(dueDate)) {
+    throw badInput("Due date must be a real date.");
+  }
+  if (!Object.values(TASK_PRIORITIES).includes(priority)) {
+    throw badInput("Choose a priority from the list.");
+  }
+  const owner = findUserById(Number(ownerId));
+  if (!owner) {
+    throw badInput("Choose an owner from the list.");
+  }
+  return { title: title.trim(), dueDate, priority, ownerId: owner.userId };
+}
+
+// Adds a task. With a template, also builds its subtasks, each due a set number of days before the task,
+// owned by the same person. One save, so one Activity.
+export function addTask(caseIdParam, input = {}, user, now = new Date()) {
+  const matter = findCase(caseIdParam);
+  const fields = validateTaskInput(input);
+  const template = findTemplate(input.templateId);
+
+  const newTask = (extra) => {
+    const task = new Task({
+      taskId: nextId(db.tasks, "taskId"),
+      caseId: matter.caseId,
+      status: TASK_STATUSES.OPEN,
+      ...fields,
+      ...extra
+    });
+    db.tasks.push(task);
+    return task;
+  };
+
+  const parent = newTask({});
+  const subtasks = template
+    ? template.subtaskDueDates(parent.dueDate).map(({ title, dueDate }) => newTask({ parentTaskId: parent.taskId, title, dueDate }))
+    : [];
+
+  const ownerName = findUserById(parent.ownerId).name;
+  const fromTemplate = template ? ` with ${subtasks.length} subtasks from the ${template.name} checklist` : "";
+  recordActivity(
+    {
+      caseId: matter.caseId,
+      userId: user.userId,
+      action: ACTIVITY_ACTIONS.TASK_ADDED,
+      detail: `Added task "${parent.title}" due ${parent.dueDate}, owned by ${ownerName}${fromTemplate}.`
+    },
+    now
+  );
+  return { parent, subtasks };
 }
