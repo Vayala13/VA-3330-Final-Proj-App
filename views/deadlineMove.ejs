@@ -35,7 +35,7 @@
       <input type="date" id="newDate" name="newDate" value="<%= form.newDate || "" %>" required>
 
       <label for="reason">Reason for the move</label>
-      <textarea id="reason" name="reason" maxlength="200" rows="3" placeholder="Court reset the hearing." required><%= form.reason || "" %></textarea>
+      <textarea id="reason" name="reason" maxlength="200" rows="3" placeholder="Court reset the hearing." data-char-counter required><%= form.reason || "" %></textarea>
 
       <button type="submit" class="btn">Move deadline</button>
     </form>

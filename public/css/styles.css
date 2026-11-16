@@ -385,3 +385,14 @@ body {
   font-size: 0.85rem;
   margin-top: 0.25rem;
 }
+
+.char-counter {
+  margin: 0.25rem 0 0;
+  color: #627d98;
+  font-size: 0.85rem;
+}
+
+.char-counter-near {
+  color: #9b1c1c;
+  font-weight: 600;
+}
