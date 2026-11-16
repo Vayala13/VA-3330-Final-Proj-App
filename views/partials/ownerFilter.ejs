@@ -1,0 +1,16 @@
+<form action="<%= ownerFilterAction %>" method="GET" class="filter-bar">
+  <div>
+    <label for="owner">Whose work</label>
+    <select id="owner" name="owner">
+      <option value="">Everyone</option>
+      <option value="mine" <%= owner === "mine" ? "selected" : "" %>>My work</option>
+      <% staff.forEach((person) => { %>
+        <option value="<%= person.userId %>" <%= owner === String(person.userId) ? "selected" : "" %>><%= person.name %></option>
+      <% }) %>
+    </select>
+  </div>
+
+  <button type="submit" class="btn">Filter</button>
+  <a href="<%= ownerFilterAction %>?owner=mine" class="clear-link">My work</a>
+  <a href="<%= ownerFilterAction %>" class="clear-link">Everyone</a>
+</form>

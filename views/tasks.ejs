@@ -1,0 +1,50 @@
+<%- include("partials/header.ejs") %>
+
+<div class="page-heading">
+  <h1>To-do</h1>
+</div>
+<p>Open tasks: overdue first, then due today, then by priority.</p>
+
+<%- include("partials/ownerFilter.ejs", { ownerFilterAction: "/tasks" }) %>
+
+<% if (tasks.length === 0) { %>
+  <p class="empty">No open tasks<%= ownerName ? ` for ${ownerName}` : "" %>.</p>
+<% } else { %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Due</th>
+        <th>Task</th>
+        <th>Priority</th>
+        <th>Case</th>
+        <th>Owner</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% tasks.forEach((task) => { %>
+        <tr>
+          <td class="nowrap">
+            <% if (task.label) { %>
+              <span class="flag flag-<%= task.label.toLowerCase().replace(" ", "-") %>"><%= task.label %></span>
+            <% } %>
+          </td>
+          <td class="nowrap"><%= task.dueDate %></td>
+          <td>
+            <%= task.title %>
+            <% if (task.parentTitle) { %>
+              <div class="subtask-of">Part of: <%= task.parentTitle %></div>
+            <% } %>
+          </td>
+          <td><%= task.priority %></td>
+          <td><a href="/cases/<%= task.caseId %>"><%= task.caption %></a></td>
+          <td><%= task.ownerName %></td>
+          <td class="nowrap"><%= task.status %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include("partials/footer.ejs") %>

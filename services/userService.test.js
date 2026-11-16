@@ -6,6 +6,7 @@ import {
   findUserByEmail,
   verifyCredentials,
   createUser,
+  parseOwnerFilter,
   DEMO_PASSWORD
 } from "./userService.js";
 import { ROLES } from "./constants.js";
@@ -82,4 +83,15 @@ test("createUser rejects bad input with status 400", async () => {
     await assert.rejects(createUser(input), (error) => error.status === 400 && message.test(error.message));
   }
   assert.equal(getAllUsers().length, 5);
+});
+
+test("owner filter: empty means everyone, mine means the signed-in user, ids must be real staff", () => {
+  const ana = findUserByEmail("agarza@mbmt.test");
+  const michael = findUserByEmail("mbenson@mbmt.test");
+  assert.equal(parseOwnerFilter("", ana), null);
+  assert.equal(parseOwnerFilter(undefined, ana), null);
+  assert.equal(parseOwnerFilter("mine", ana), ana.userId);
+  assert.equal(parseOwnerFilter(String(michael.userId), ana), michael.userId);
+  assert.throws(() => parseOwnerFilter("999", ana), { status: 400 });
+  assert.throws(() => parseOwnerFilter("abc", ana), { status: 400 });
 });

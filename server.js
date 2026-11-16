@@ -6,6 +6,7 @@ import authRouter from "./routes/auth.js";
 import staffRouter from "./routes/staff.js";
 import casesRouter from "./routes/cases.js";
 import deadlinesRouter from "./routes/deadlines.js";
+import tasksRouter from "./routes/tasks.js";
 import { securityHeaders, sessionMiddleware, csrfProtection } from "./middleware/security.js";
 import {
   passportInitialize,
@@ -40,6 +41,7 @@ app.use(ensureAuthenticated);
 app.use("/", homeRouter);
 app.use("/cases", casesRouter);
 app.use("/deadlines", deadlinesRouter);
+app.use("/tasks", tasksRouter);
 app.use("/staff", staffRouter);
 
 app.use(notFound);

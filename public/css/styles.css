@@ -332,3 +332,13 @@ body {
   color: #627d98;
   font-size: 0.85rem;
 }
+
+.flag-due-today {
+  background: #fef3c7;
+  color: #8a5a00;
+}
+
+.subtask-of {
+  color: #627d98;
+  font-size: 0.85rem;
+}
