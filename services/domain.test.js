@@ -30,6 +30,8 @@ test("dates: daysBetween counts calendar days, including across daylight saving"
 test("dates: rejects impossible or badly formatted dates", () => {
   assert.equal(isValidDateString("2026-11-15"), true);
   assert.equal(isValidDateString("2026-02-30"), false);
+  assert.equal(isValidDateString("2026-13-01"), false);
+  assert.equal(isValidDateString("2026-11-32"), false);
   assert.equal(isValidDateString("11/15/2026"), false);
   assert.equal(isValidDateString(undefined), false);
 });
