@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt";
 import { User } from "./User.js";
-import { ROLES, SALT_ROUNDS } from "./constants.js";
-import { isGoodStringParam } from "./validation.js";
+import { ROLES, SALT_ROUNDS, MIN_PASSWORD_LENGTH } from "./constants.js";
+import { isGoodStringParam, isGoodEmail } from "./validation.js";
+import { ValidationError } from "./errors.js";
 
 // Demo staff for the class version. Passwords are hashed when the server starts; only the hashes are kept.
 export const DEMO_PASSWORD = "CaseTracker1!";
@@ -18,12 +19,43 @@ const users = [];
 
 const normalizeEmail = (email) => email.trim().toLowerCase();
 
+const nextUserId = () => (users.length ? Math.max(...users.map((user) => user.userId)) + 1 : 1);
+
 export async function seedUsers() {
   users.length = 0;
   for (const staff of SEED_STAFF) {
     const passwordHash = await bcrypt.hash(DEMO_PASSWORD, SALT_ROUNDS);
-    users.push(new User({ userId: users.length + 1, passwordHash, ...staff }));
+    users.push(new User({ userId: nextUserId(), passwordHash, ...staff }));
   }
+}
+
+export async function createUser({ name, email, password, role }) {
+  if (!isGoodStringParam(name)) {
+    throw new ValidationError("Name is required.");
+  }
+  if (!isGoodEmail(email)) {
+    throw new ValidationError("Enter a valid email address.");
+  }
+  if (findUserByEmail(email)) {
+    throw new ValidationError("A staff account with that email already exists.");
+  }
+  if (!Object.values(ROLES).includes(role)) {
+    throw new ValidationError("Choose a role.");
+  }
+  if (typeof password !== "string" || password.length < MIN_PASSWORD_LENGTH) {
+    throw new ValidationError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+  }
+
+  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+  const user = new User({
+    userId: nextUserId(),
+    name: name.trim(),
+    email: normalizeEmail(email),
+    passwordHash,
+    role
+  });
+  users.push(user);
+  return user;
 }
 
 export function getAllUsers() {

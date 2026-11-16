@@ -3,8 +3,14 @@ import path from "node:path";
 import morgan from "morgan";
 import homeRouter from "./routes/home.js";
 import authRouter from "./routes/auth.js";
+import staffRouter from "./routes/staff.js";
 import { securityHeaders, sessionMiddleware, csrfProtection } from "./middleware/security.js";
-import { passportInitialize, passportSession, exposeCurrentUser } from "./middleware/auth.js";
+import {
+  passportInitialize,
+  passportSession,
+  exposeCurrentUser,
+  ensureAuthenticated
+} from "./middleware/auth.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 import { seedUsers } from "./services/userService.js";
 
@@ -25,7 +31,11 @@ app.use(csrfProtection);
 app.use(exposeCurrentUser);
 
 app.use("/", authRouter);
+
+// Everything below requires a signed-in user.
+app.use(ensureAuthenticated);
 app.use("/", homeRouter);
+app.use("/staff", staffRouter);
 
 app.use(notFound);
 app.use(errorHandler);

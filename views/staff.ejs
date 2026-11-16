@@ -1,0 +1,51 @@
+<%- include("partials/header.ejs") %>
+
+<h1>Staff</h1>
+
+<% if (locals.added) { %>
+  <p class="alert alert-success" role="status">Added <%= added %>.</p>
+<% } %>
+
+<table class="data-table">
+  <thead>
+    <tr><th>Name</th><th>Email</th><th>Role</th></tr>
+  </thead>
+  <tbody>
+    <% staff.forEach((member) => { %>
+      <tr><td><%= member.name %></td><td><%= member.email %></td><td><%= member.role %></td></tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<section class="card">
+  <h2>Add staff member</h2>
+
+  <% if (locals.error) { %>
+    <p class="alert alert-error" role="alert"><%= error %></p>
+  <% } %>
+
+  <form action="/staff" method="POST" class="form">
+    <%- include("partials/csrf.ejs") %>
+
+    <label for="name">Full name</label>
+    <input type="text" id="name" name="name" value="<%= form.name || "" %>" required>
+
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" value="<%= form.email || "" %>" required>
+
+    <label for="role">Role</label>
+    <select id="role" name="role" required>
+      <option value="">Choose a role</option>
+      <% roles.forEach((role) => { %>
+        <option value="<%= role %>" <%= form.role === role ? "selected" : "" %>><%= role %></option>
+      <% }) %>
+    </select>
+
+    <label for="password">Temporary password</label>
+    <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" required>
+
+    <button type="submit" class="btn">Add staff member</button>
+  </form>
+</section>
+
+<%- include("partials/footer.ejs") %>

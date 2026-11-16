@@ -35,6 +35,27 @@ export const exposeCurrentUser = (req, res, next) => {
   next();
 };
 
+// Authentication: is someone signed in?
+export const ensureAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+};
+
+// Authorization: is the signed-in user allowed here? Usage: requireRole(ROLES.ADMIN)
+export const requireRole = (...roles) => (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login");
+  }
+  if (!req.user.hasRole(...roles)) {
+    const error = new Error("You don't have permission to view this page.");
+    error.status = 403;
+    return next(error);
+  }
+  next();
+};
+
 export const loginRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 5,
